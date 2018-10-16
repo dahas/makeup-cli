@@ -55,13 +55,20 @@ if (isset($argv[1]) && $argv[1] && isset($argv[2]) && $argv[2]) {
         $className = preg_replace("/[^A-Za-z?! ]/", "", $argv[2]);
 
         if ($className == $argv[2]) {
-            // Type: PAGE
-            if (!isset($argv[3]) || strtolower($argv[3]) == "page") {
+            // Type: PAGE, CONTENT or FUNCTION
+            if (!isset($argv[3]) || in_array("page", $argv) || in_array("content", $argv) || in_array("function", $argv) || in_array("protected", $argv)) {
+                $protected = in_array("protected", $argv) ? "1" : "0";
+
+                if(isset($argv[3]) && $argv[3] != "protected")
+                    $modType = strtoupper($argv[3]);
+                else
+                    $modType = "PAGE";
+
                 $className = ucfirst($className);
                 $modName = strtolower(preg_replace('/(?<!^)[A-Z]+/', '_$0', $className));
 
                 $content_ini = file_get_contents($src_root . "/modules/xxxx/config/xxxx.ini");
-                $content_ini = str_replace(["xxxx", "XXXX"], [$modName, $className], $content_ini);
+                $content_ini = str_replace(["xxxx", "XXXX", "TTTT", "PPPP"], [$modName, $className, $modType, $protected], $content_ini);
 
                 $content_php = file_get_contents($src_root . "/modules/xxxx/controller/xxxx.php");
                 $content_php = str_replace(["xxxx", "XXXX"], [$modName, $className], $content_php);
@@ -113,12 +120,14 @@ if (isset($argv[1]) && $argv[1] && isset($argv[2]) && $argv[2]) {
                 echo "-----------------------------------------------\n";
             }
             // Type: MENU
-            else if (isset($argv[3]) && strtolower($argv[3]) == "menu") {
+            else if (isset($argv[3]) && in_array("menu", $argv)) {
+                $protected = in_array("protected", $argv) ? "1" : "0";
+
                 $className = ucfirst($className);
                 $modName = strtolower(preg_replace('/(?<!^)[A-Z]+/', '_$0', $className));
 
                 $content_ini = file_get_contents($src_root . "/modules/zzzz/config/zzzz.ini");
-                $content_ini = str_replace(["zzzz", "ZZZZ"], [$modName, $className], $content_ini);
+                $content_ini = str_replace(["zzzz", "ZZZZ", "PPPP"], [$modName, $className, $protected], $content_ini);
 
                 $path = $dst_root . "/modules/" . $modName;
 
