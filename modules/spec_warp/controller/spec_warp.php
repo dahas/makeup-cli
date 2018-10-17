@@ -9,7 +9,7 @@ use makeup\lib\Module;
 // use makeup\lib\Lang;
 
 
-class XXXX extends Module
+class SpecWarp extends Module
 {
     public function __construct()
     {
@@ -26,8 +26,6 @@ class XXXX extends Module
     {
         $m = [];
         $s = [];
-
-        $m['##MODULE##'] = $this->modName;
 
         return $this->getTemplate()->parse($m, $s);
     }
