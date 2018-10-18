@@ -24,7 +24,7 @@ if ($phar) { // PHAR
 /** Create module file structure **/
 
 // Commands with Parameters:
-if (count($argv) > 1) {
+if (count($argv) > 2) {
 
     /***** CREATE SERVICE */
     if ($argv[1] == "--create-service") {
@@ -64,14 +64,14 @@ if (count($argv) > 1) {
 
         if ($className == $argv[2]) {
             // Type: PAGE or CONTENT
-            if (count($argv) == 3 || (in_array("-t", $argv) && (in_array("page", $argv) || in_array("content", $argv)) && !in_array("menu", $argv))) {
+            if (!in_array("-t", $argv) || (in_array("-t", $argv) && (in_array("page", $argv) || in_array("content", $argv)) && !in_array("menu", $argv))) {
                 $protected = in_array("-p", $argv) ? "1" : "0";
 
                 $className = ucfirst($className);
                 $modName = strtolower(preg_replace('/(?<!^)[A-Z]+/', '_$0', $className));
 
                 // PAGE
-                if (count($argv) == 3 || (in_array("-t", $argv) && in_array("page", $argv))) {
+                if (!in_array("-t", $argv) || (in_array("-t", $argv) && in_array("page", $argv))) {
                     $content_ini = file_get_contents($src_root . "/modules/xxxx/config/xxxx.ini");
                     $content_ini = str_replace(["xxxx", "XXXX", "PPPP"], [$modName, $className, $protected], $content_ini);
     
