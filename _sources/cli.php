@@ -1,5 +1,13 @@
 <?php
 
+/**
+ * COMMANDS:
+ * Creating a service: --create-service srvName
+ * Creating a module: --create-module modName -t page|content -p (-t = Type of module, -p = Module is protected and needs a sign in)
+ * Start the SASS watcher: --sass-watch
+ * Launch the interal Webserver: --serve
+ */
+
 Phar::interceptFileFuncs();
 
 $phar = Phar::running(false);
@@ -16,7 +24,7 @@ if ($phar) { // PHAR
 /** Create module file structure **/
 
 // Commands with Parameters:
-if (isset($argv[1]) && $argv[1] && isset($argv[2]) && $argv[2]) {
+if (count($argv) > 1) {
 
     /***** CREATE SERVICE */
     if ($argv[1] == "--create-service") {
@@ -56,14 +64,14 @@ if (isset($argv[1]) && $argv[1] && isset($argv[2]) && $argv[2]) {
 
         if ($className == $argv[2]) {
             // Type: PAGE or CONTENT
-            if (!isset($argv[3]) || in_array("page", $argv) || in_array("content", $argv) || in_array("protected", $argv)) {
-                $protected = in_array("protected", $argv) ? "1" : "0";
+            if (count($argv) == 3 || (in_array("-t", $argv) && (in_array("page", $argv) || in_array("content", $argv)) && !in_array("menu", $argv))) {
+                $protected = in_array("-p", $argv) ? "1" : "0";
 
                 $className = ucfirst($className);
                 $modName = strtolower(preg_replace('/(?<!^)[A-Z]+/', '_$0', $className));
 
                 // PAGE
-                if ((!isset($argv[3]) || in_array("page", $argv))) {
+                if (count($argv) == 3 || (in_array("-t", $argv) && in_array("page", $argv))) {
                     $content_ini = file_get_contents($src_root . "/modules/xxxx/config/xxxx.ini");
                     $content_ini = str_replace(["xxxx", "XXXX", "PPPP"], [$modName, $className, $protected], $content_ini);
     
@@ -85,7 +93,7 @@ if (isset($argv[1]) && $argv[1] && isset($argv[2]) && $argv[2]) {
                 $path = $dst_root . "/modules/" . $modName;
 
                 echo "-----------------------------------------------\n";
-                if (mkdir($path, 0777, true)) {
+                if (@mkdir($path, 0777, true)) {
                     echo "PHP: SUCCESS - Created directory '/makeup/modules/" . $modName . "'\n";
                     if (mkdir($path . "/config")) {
                         echo "PHP: SUCCESS - Created directory '/makeup/modules/" . $modName . "/config'\n";
@@ -119,6 +127,7 @@ if (isset($argv[1]) && $argv[1] && isset($argv[2]) && $argv[2]) {
                     }
                 } else {
                     echo "PHP: ERROR - Creating directory '/makeup/modules/" . $modName . " failed!'\n";
+                    echo "Please make sure you have permissions to create a directory and the directory does not already exist.'\n";
                 }
                 echo "-----------------------------------------------\n";
                 echo "Please make sure, all files and folders have been created successfully! If an error occured, remove the directory of the module you just created, as long as it exists. Before trying again, make sure you have the right permissions and the name of the module does not contain any weired characters.\n";
@@ -126,8 +135,8 @@ if (isset($argv[1]) && $argv[1] && isset($argv[2]) && $argv[2]) {
                 echo "-----------------------------------------------\n";
             }
             // Type: MENU
-            else if (isset($argv[3]) && in_array("menu", $argv)) {
-                $protected = in_array("protected", $argv) ? "1" : "0";
+            else if (isset($argv[3]) && in_array("-t", $argv) && in_array("menu", $argv)) {
+                $protected = in_array("-p", $argv) ? "1" : "0";
 
                 $className = ucfirst($className);
                 $modName = strtolower(preg_replace('/(?<!^)[A-Z]+/', '_$0', $className));
@@ -186,8 +195,8 @@ elseif (isset($argv[1]) && $argv[1] && (!isset($argv[2]) || !$argv[2])) {
     }
     
     /***** RUN SASS WATCHER */
-    elseif ($argv[1] == "--watch") {
-        system("sass --watch $serveFromPath/bootstrap-sass/bootstrap-sass-gen.scss:$serveFromPath/resources/css/bootstrap-sass-gen.css");
+    elseif ($argv[1] == "--sass-watch") {
+        system("sass --watch $serveFromPath/sass/styles.scss:$serveFromPath/resources/css/styles.css");
     }
     
     /***** CREATE APP */

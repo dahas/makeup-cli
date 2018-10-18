@@ -12,7 +12,7 @@
             "cwd": "${fileDirname}",
             "port": 9000,
             "args": [
-                "--create-module", "specWarp", "page"
+                "--create-module", "myModule", "-p", "-t", "content"
              ]
         }
     ]
